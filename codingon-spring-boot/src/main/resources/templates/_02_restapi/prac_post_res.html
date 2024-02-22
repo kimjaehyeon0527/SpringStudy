@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Post</title>
+</head>
+<body>
+   <div th:text="'이름 : ' + ${name}"></div>
+   <div th:text="'성별 : ' + ${gender}"></div>
+   <div th:text="'생년월일 : ' + ${year} + '-' + ${month} + '-' + ${day}"></div>
+   <div th:text="'관심사 : ' + ${hobby}"></div>
+</body>
+</html>
