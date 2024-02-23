@@ -1,6 +1,7 @@
 package codingon.codingonspringboot.controller._02_restapi;
 
 import codingon.codingonspringboot.dto.UserDTO;
+import codingon.codingonspringboot.vo.UserVO;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,9 @@ public class RestController {
     public String getRes1(@RequestParam(value = "name") String name, @RequestParam(value = "age") int age, Model model) {
         // @RequestParam 어노테이션
         // - String query 중에서 name key 에 대한 value 를 String name 에 매핑 (?key=value)
+        //  String query : URL 쿼리 문자열 - 이 문자열은 URL 의 끝에 물음표(?)로 시작하며 그 뒤에 키(key)와 값(value)의 쌍이 오는 형식
         // - required=true 가 기본 값이므로 요청 URL 에서 name key 를 필수로 보내야 함.
+        // - required=true : 매개 변수가 필수적으로 요청되어야 함을 의미
         // ex. GET /get/res1?name=someone
         model.addAttribute("name", name);
         model.addAttribute("age", age);
@@ -63,6 +66,7 @@ public class RestController {
         // - optional 한 parameter 가 있다면 맨 뒤에 오도록 설정.
         // 참고. Integer age 라고 한 이유
         // - age 는 optional 한 값. 즉, null 이 될 수도 있기 때문에 primitive type 이 아닌 reference type 인 래퍼 객체 사용.
+        // primitive type : null 값을 줄 수 없다.
 
         model.addAttribute("name", name);
         model.addAttribute("age", age);
@@ -71,11 +75,17 @@ public class RestController {
     }
 
     @GetMapping({"/introduce/{name}"})
-    public String getPrac1(@PathVariable String name, Model model) {
+    public String getPrac1(@PathVariable(value = "name") String name, Model model) {
         model.addAttribute("name", name);
         return "_02_restapi/prac_res";
     }
 
+    @GetMapping({"/introduce2"})
+    public String getPrac2(@RequestParam(value = "name") String name, @RequestParam(value = "age") Integer age, Model model) {
+        model.addAttribute("name", name);
+        model.addAttribute("age", age);
+        return "_02_restapi/prac_res";
+    }
 
     // ========== Post 요청 ==========
     // - Post 로 전달 할 때 Controller 에서 받는 방법은 @RequestParam
@@ -149,7 +159,110 @@ public class RestController {
         // => @RequestBody 어노테이션 사용 시 오류 발생함.
         return userDTO.getName() + " " + userDTO.getAge();
     }   // x : error (type=Unsupported Media Type, status-415).
+
+
+    // ============================ VO 이용 =============================
+
+    @GetMapping("/vo/res1")
+    @ResponseBody
+    public String voRes1(@ModelAttribute UserVO userVO) {
+        System.out.println(userVO.hashCode()); // 961
+        // @ModelAttribute 를 이용하면 객체의 set 함수를 이용해 값을 넣어주기 때문에 값이 null이 나옴.
+        return userVO.getName() + " " + userVO.getAge();
+    } // O (null, null)
+
+    @PostMapping ("/vo/res2")
+    @ResponseBody
+    public String voRes2( UserVO userVO) {
+        return userVO.getName() + " " + userVO.getAge();
+    } // O (null, null)
+
+    @PostMapping ("/vo/res3")
+    @ResponseBody
+    public String voRes3(@RequestBody UserVO userVO) {
+        return userVO.getName() + " " + userVO.getAge();
+    }
+    // x : error (type=Unsupported Media Type, status-415).
+    // 일반폼 사용할때는 DTO 사용
+
+    // ===================== DTO 이용 with axios ===================
+    @GetMapping("/axios/res1")
+    @ResponseBody
+    public String axiosRes1(@RequestParam String name, @RequestParam String age) {
+        return "이름 : " + name + ", 나이: " + age;
+    }
+
+    @GetMapping("/axios/res2")
+    @ResponseBody
+    public String axiosRes2(UserDTO userDTO) {
+        return "이름 : " + userDTO.getName() + ", 나이 : " + userDTO.getAge();
+    }
+
+    @PostMapping("/axios/res3")
+    @ResponseBody
+    public String axiosRes3(@RequestParam String name, @RequestParam String age) {
+        // @RequestParam required 기본값이 true
+        // axios 로 값을 전달하게 될 경우 파라미터로 값이 들어오지 않는다. (Post 로 보냈을 때)
+        // 값이 들어오지 않는데 기본값이 true 이기 때문에 오류 발생.
+        return "이름 : " + name + ", 나이: " + age;
+    } // x (error 400)
+
+    @PostMapping("/axios/res4")
+    @ResponseBody
+    public String axiosRes4(UserDTO userDTO) {
+        return "이름 : " + userDTO.getName() + ", 나이 : " + userDTO.getAge();
+    } // o (null)
+
+    @PostMapping("/axios/res5")
+    @ResponseBody
+    public String axiosRes5(@RequestBody UserDTO userDTO) {
+        return "이름 : " + userDTO.getName() + ", 나이 : " + userDTO.getAge();
+    } // o
+
+    // ===================== VO 이용 with axios ===================
+    @GetMapping("/axios/vo/res1")
+    @ResponseBody
+    public String axiosVoRes1(@RequestParam String name, @RequestParam String age) {
+        return "이름 : " + name + ", 나이: " + age;
+    }
+
+    @GetMapping("/axios/vo/res2")
+    @ResponseBody
+    public String axiosVoRes2(UserVO userVO) {
+        // @ModelAttribute 생략된 상태, setter 함수를 실행해서 값을 넣어주기 때문에 null
+        // UserVO 에는 setter 없음.
+        return "이름 : " + userVO.getName() + ", 나이 : " + userVO.getAge();
+    }   // o (null)
+
+    @PostMapping("/axios/vo/res3")
+    @ResponseBody
+    public String axiosVoRes3(@RequestParam String name, @RequestParam String age) {
+        // @RequestParam required 기본값이 true
+        // axios 로 값을 전달하게 될 경우 파라미터로 값이 들어오지 않는다. (Post 로 보냈을 때)
+        // 값이 들어오지 않는데 기본값이 true 이기 때문에 오류 발생.
+        return "이름 : " + name + ", 나이: " + age;
+    } // x (error 400)
+
+    @PostMapping("/axios/vo/res4")
+    @ResponseBody
+    public String axiosVoRes4(UserVO userVO) {
+        return "이름 : " + userVO.getName() + ", 나이 : " + userVO.getAge();
+    } // o (null)
+
+    @PostMapping("/axios/vo/res5")
+    @ResponseBody
+    public String axiosVoRes5(@RequestBody UserVO userVO) {
+        // @RequestBody 로 값을 전달할 때 userVO 에 setter 함수가 없어도 같이 들어간다.
+        // setter 함수 실행이 아니라 각각의 필드(변수)에 직접적으로 값을 주입하면서 매핑.
+        // @ModelAttribute 가 setter 함수를 실행해 값을 넣어준다면,
+        // @RequestBody 는 각각의 필드에 직접 주입.
+        return "이름 : " + userVO.getName() + ", 나이 : " + userVO.getAge();
+    } // o
 }
+
+
+
+
 
 
 
