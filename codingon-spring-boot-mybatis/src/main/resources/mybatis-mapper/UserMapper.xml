@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="codingon.codingonspringbootmybatis.mapper.UserMapper">
+    <select id="retrieveAll" resultType="codingon.codingonspringbootmybatis.domain.User">
+<!--        return type 이  ->  user.java 형태와 같다 -->
+        SELECT user.* FROM user
+
+
+        <!--        WHERE 조건 추가      -->
+        <where>
+            <if test="name !=null">
+                AND name = #{name}
+            </if>
+        </where>
+    </select>
+<!--    select 문을 사용하기 위해 select 태그를 사용한 것.   -->
+</mapper>
