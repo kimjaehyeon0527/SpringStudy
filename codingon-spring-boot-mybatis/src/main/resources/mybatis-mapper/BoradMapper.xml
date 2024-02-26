@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="codingon.codingonspringbootmybatis.mapper.BoardMapper">
+    <select id="getAll" resultType="codingon.codingonspringbootmybatis.domain.Board">
+        <!--        return type 이  ->  user.java 형태와 같다 -->
+        SELECT board.* FROM board
+    </select>
+    <!--    select 문을 사용하기 위해 select 태그를 사용한 것.   -->
+    <insert id="insertBoard" parameterType="map">
+        INSERT INTO board(title, content, writer) VALUES(#{title}, #{content}, #{writer})
+    </insert>
+    <update id="patchBoard" parameterType="map">
+        UPDATE board SET title=#{title}, content=#{content}, writer=#{writer}
+        WHERE id=#{id}
+    </update>
+    <delete id="deleteBoard" parameterType="Integer">
+        DELETE FROM board WHERE id=#{id}
+    </delete>
+    <select id="searchBoard" parameterType="String" resultType="codingon.codingonspringbootmybatis.domain.Board">
+        SELECT * FROM board
+        <where>
+<!--            if 문은 test 필수 입력!-->
+            <if test="word != ''">
+<!--                word 라는 문자열 값이 들어가는것 모두 찾기-->
+                AND title LIKE CONCAT('%', #{word}, '%');
+<!--                CONCAT: 문자열 더하기-->
+            </if>
+        </where>
+    </select>
+</mapper>

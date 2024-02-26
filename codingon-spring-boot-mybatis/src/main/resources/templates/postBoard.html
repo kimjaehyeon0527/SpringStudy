@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <h1>유저 정보 조회</h1>
+
+    <table>
+        <tr>
+            <th>No.</th>
+            <th>ID</th>
+            <th>제목</th>
+            <th>내용</th>
+            <th>작가</th>
+            <th>시간</th>
+        </tr>
+        <tr th:each="postboard:${list}">
+            <td th:text="${postboard.getNo()}"></td>
+            <td th:text="${postboard.getId()}"></td>
+            <td th:text="${postboard.gettitle()}"></td>
+            <td th:text="${postboard.getcontent()}"></td>
+            <td th:text="${postboard.writer()}"></td>
+            <td th:text="${postboard.registerd()}"></td>
+        </tr>
+    </table>
+</body>
+</html>

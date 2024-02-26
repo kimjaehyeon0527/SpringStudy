@@ -24,6 +24,7 @@ public class PostboardController {
         postboard.setWriter(writer);
         postboardService.insertBoard(postboard);
 
-        return "redirect:/";
+//        return "redirect:/";
+        return "postboard";
     }
 }
